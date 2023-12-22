@@ -6,6 +6,10 @@ export type CartWithProducts = Prisma.CartGetPayload<{
   include: { items: { include: { product: true } } };
 }>;
 
+export type CartItemWithProduct = Prisma.CartItemGetPayload<{
+  include: { product: true };
+}>;
+
 // using CartWithProducts type instead of Cart type because Cart type from prisma schema contains only the data from the cart model, it doesn't contain cart item or product information
 // thanks to that, this type can have the same structure as object returned from getCart()
 export type ShoppingCart = CartWithProducts & {
