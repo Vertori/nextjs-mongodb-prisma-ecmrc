@@ -114,12 +114,19 @@ export async function mergeAnonymousCartIntoUserCart(userId: string) {
       await tx.cartItem.deleteMany({
         where: { cartId: userCart.id },
       });
-      await tx.cartItem.createMany({
-        data: mergedCartItems.map((item) => ({
-          cartId: userCart.id,
-          productId: item.productId,
-          quantity: item.quantity,
-        })),
+
+      await tx.cart.update({
+        where: { id: userCart.id },
+        data: {
+          items: {
+            createMany: {
+              data: mergedCartItems.map((item) => ({
+                productId: item.productId,
+                quantity: item.quantity,
+              })),
+            },
+          },
+        },
       });
     } else {
       // if there is no user cart in db, create a new one with items from local cookies cart

@@ -14,25 +14,41 @@ export async function setProductQuantity(productId: string, quantity: number) {
   if (quantity === 0) {
     //if product is in cart and its quantity is equal to zero, delete it from db
     if (articleInCart) {
-      await prisma.cartItem.delete({
-        where: { id: articleInCart.id },
+      await prisma.cart.update({
+        where: { id: cart.id },
+        data: {
+          items: {
+            delete: { id: articleInCart?.id },
+          },
+        },
       });
     }
   } else {
     //if quantity is different than zero
     if (articleInCart) {
       //if product is in cart, set its quantity in db to passed quantity
-      await prisma.cartItem.update({
-        where: { id: articleInCart.id },
-        data: { quantity },
+      await prisma.cart.update({
+        where: { id: cart.id },
+        data: {
+          items: {
+            update: {
+              where: { id: articleInCart.id },
+              data: { quantity },
+            },
+          },
+        },
       });
     } else {
       //if product is not in cart, create new product in db with passed quantity
-      await prisma.cartItem.create({
+      await prisma.cart.update({
+        where: { id: cart.id },
         data: {
-          cartId: cart.id,
-          productId,
-          quantity,
+          items: {
+            create: {
+              productId,
+              quantity,
+            },
+          },
         },
       });
     }
